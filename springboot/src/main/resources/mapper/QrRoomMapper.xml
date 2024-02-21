@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.seatbooking.springboot.mapper.RoomMapper">
+
+    <select id="searchList" resultType="com.seatbooking.springboot.entity.Room">
+        select * from t_room
+        where r_type = #{rType}
+        <if test = "rCode != null and rCode != ''">
+            and r_code like "%"#{rCode}"%"
+        </if>
+        <if test = "(rStatus != null and rStatus != '') or rStatus == 0">
+            and r_status = #{rStatus}
+        </if>
+        order by create_room desc
+        limit #{pageNum},#{pageSize}
+    </select>
+
+    <select id="searchTotal" resultType="Integer">
+        select count(*) from t_room
+        where r_type = #{rType}
+        <if test = "rCode != null and rCode != ''">
+            and r_code like "%"#{rCode}"%"
+        </if>
+        <if test = "(rStatus != null and rStatus != '') or rStatus == 0">
+            and r_status = #{rStatus}
+        </if>
+    </select>
+
+    <update id="updateMeetInfo">
+        update t_room
+        <set>
+            <if test="rCode != null and rCode != ''">
+                r_code = #{rCode},
+            </if>
+            <if test="district != null and district != ''">
+                district = #{district},
+            </if>
+            <if test="roomName != null and roomName != ''">
+                room_name = #{roomName},
+            </if>
+            <if test="floor != null and floor != ''">
+                floor =#{floor},
+            </if>
+            <if test="isResearch != null and isResearch != ''">
+                is_research =#{isResearch},
+            </if>
+            <if test="roomDepart != null and roomDepart != ''">
+                room_depart =#{roomDepart}
+            </if>
+        </set>
+        <where>
+            room_id = #{roomId}
+        </where>
+    </update>
+
+    <update id="updateStudyInfo">
+        update t_room
+        <set>
+            <if test="rCode != null and rCode != ''">
+                r_code = #{rCode},
+            </if>
+            <if test="num != null and num != ''">
+                num = #{num},
+            </if>
+            <if test="roomName != null and roomName != ''">
+                room_name = #{roomName},
+            </if>
+            <if test="district != null and district != ''">
+                district = #{district},
+            </if>
+            <if test="floor != null and floor != ''">
+                floor =#{floor},
+            </if>
+            <if test="rUrl != null and rUrl != ''">
+                r_url = #{rUrl}
+            </if>
+        </set>
+        <where>
+            room_id = #{roomId}
+        </where>
+    </update>
+
+    <update id="updateClassInfo">
+        update t_room
+        <set>
+            <if test="rCode != null and rCode != ''">
+                r_code = #{rCode},
+            </if>
+            <if test="num != null and num != ''">
+                num = #{num},
+            </if>
+            <if test="roomName != null and roomName != ''">
+                room_name = #{roomName},
+            </if>
+            <if test="floor != null and floor != ''">
+                floor =#{floor}
+            </if>
+        </set>
+        <where>
+            room_id = #{roomId}
+        </where>
+    </update>
+
+    <select id="checkOverlap" resultType="Integer">
+
+    </select>
+
+</mapper>

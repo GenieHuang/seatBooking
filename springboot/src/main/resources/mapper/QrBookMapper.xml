@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.seatbooking.springboot.mapper.BookMapper">
+    <select id="searchList" resultType="com.seatbooking.springboot.pojo.vo.BookVo">
+        select a.*,b.name,b.username,c.r_code,d.s_code, c.room_name
+        from t_book a left join t_user b on a.user_id = b.user_id
+                      left join t_room c on a.room_id = c.room_id
+                      left join t_seat d on a.seat_id = d.seat_id
+        <where>
+            <if test="bookId != null and bookId != ''">
+                a.book_id like "%"#{bookId}"%"
+            </if>
+            <if test="username != null and username != ''">
+                <if test="bookId != null and bookId != ''">
+                    and
+                </if>
+                b.username like "%"#{username}"%"
+            </if>
+            <if test="name !=null and name != ''">
+                <if test="(bookId != null and bookId != '') or (username != null and username != '')">
+                    and
+                </if>
+                b.name like "%"#{name}"%"
+            </if>
+            <if test="bookType != null and bookType != ''">
+                <if test="(bookId != null and bookId != '') or (username != null and username != '') or (name !=null and name != '')">
+                    and
+                </if>
+                a.book_type = #{bookType}
+            </if>
+            <if test="(bookStatus != null and bookStatus != '') or bookStatus == 0">
+                <if test="(bookId != null and bookId != '') or (username != null and username != '') or (name !=null and name != '') or (bookType != null and bookType != '')">
+                    and
+                </if>
+                a.book_status = #{bookStatus}
+            </if>
+        </where>
+        order by a.create_book desc
+        limit #{pageNum},#{pageSize}
+    </select>
+
+    <select id="searchTotal" resultType="Integer">
+        select count(*)
+        from t_book a left join t_user b on a.user_id = b.user_id
+        <where>
+            <if test="bookId != null and bookId != ''">
+                a.book_id like "%"#{bookId}"%"
+            </if>
+            <if test="username != null and username != ''">
+                <if test="bookId != null and bookId != ''">
+                    and
+                </if>
+                b.username like "%"#{username}"%"
+            </if>
+            <if test="name !=null and name != ''">
+                <if test="(bookId != null and bookId != '') or (username != null and username != '')">
+                    and
+                </if>
+                b.name like "%"#{name}"%"
+            </if>
+            <if test="bookType != null and bookType != ''">
+                <if test="(bookId != null and bookId != '') or (username != null and username != '') or (name !=null and name != '')">
+                    and
+                </if>
+                a.book_type = #{bookType}
+            </if>
+            <if test="(bookStatus != null and bookStatus != '') or bookStatus == 0">
+                <if test="(bookId != null and bookId != '') or (username != null and username != '') or (name !=null and name != '') or (bookType != null and bookType != '')">
+                    and
+                </if>
+                a.book_status = #{bookStatus}
+            </if>
+        </where>
+    </select>
+
+    <select id="searchByClient" resultType="com.seatbooking.springboot.pojo.vo.FrontBookVo">
+        select a.book_id, a.book_type, b.room_name,concat_ws('-',b.r_code,c.s_code) as book_space, a.book_date, a.start_time, a.end_time, a.review_time, a.book_status,a.reason,a.topic,a.advisor
+        from t_book a
+            left join t_room b on a.room_id = b.room_id
+            left join t_seat c on a.seat_id = c.seat_id
+        where user_id = #{userId}
+        <if test="bookId != null and bookId != ''">
+            and book_id like "%"#{bookId}"%"
+        </if>
+        <if test="(bookType != null and bookType != '') or bookType == 0">
+            and book_type = #{bookType}
+        </if>
+        <if test="(bookStatus != null and bookStatus != '') or bookStatus == 0">
+            and book_status = #{bookStatus}
+        </if>
+        order by a.create_book desc
+        limit #{pageNum},#{pageSize}
+    </select>
+
+    <select id="searchByClientTotal" resultType="Integer">
+        select count(*) from t_book where user_id = #{userId}
+        <if test="bookId != null and bookId != ''">
+            and book_id like "%"#{bookId}"%"
+        </if>
+        <if test="(bookType != null and bookType != '') or bookType == 0">
+            and book_type = #{bookType}
+        </if>
+        <if test="(bookStatus != null and bookStatus != '') or bookStatus == 0">
+            and book_status = #{bookStatus}
+        </if>
+    </select>
+
+    <insert id="insertBookRecord">
+        insert into t_book
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            book_id,
+            user_id,
+            book_type,
+            room_id,
+            book_date,
+            start_time,
+            end_time,
+            book_status,
+            <if test="seatId != null and seatId != '' ">
+                seat_id,
+            </if>
+            <if test="reason != null and reason != '' ">
+                reason,
+            </if>
+            <if test="topic != null and topic != '' ">
+                topic,
+            </if>
+            <if test="advisor != null and advisor != '' ">
+                advisor,
+            </if>
+            <if test="reviewTime != null">
+                review_time,
+            </if>
+        </trim>
+            values
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            #{bookId},
+            #{userId},
+            #{bookType},
+            #{roomId},
+            #{bookDate},
+            #{startTime},
+            #{endTime},
+            #{bookStatus},
+            <if test="seatId != null and seatId != '' ">
+                #{seatId},
+            </if>
+            <if test="reason != null and reason != '' ">
+                #{reason},
+            </if>
+            <if test="topic != null and topic != '' ">
+                #{topic},
+            </if>
+            <if test="advisor != null and advisor != '' ">
+                #{advisor},
+            </if>
+            <if test="reviewTime != null">
+                #{reviewTime},
+            </if>
+        </trim>
+    </insert>
+
+    <select id="checkOverlap" resultType="Integer">
+        select if (
+            exists(
+                select * from t_book
+                where room_id = #{roomId}
+                  <if test="seatId != null and seatId != ''">
+                      and seat_id = #{seatId}
+                  </if>
+                  and (
+                      (start_time between timestamp(#{startTime}) and timestamp(#{endTime}))
+                or (end_time between timestamp(#{startTime}) and timestamp(#{endTime}))
+                or (start_time <![CDATA[<=]]> timestamp(#{startTime}) and end_time <![CDATA[>=]]> timestamp(#{endTime}) ) )
+                limit 0,1)
+            ,1,0)
+    </select>
+
+    <update id="updateStatus">
+        update t_book set book_status = #{bookStatus}
+            <if test="bookStatus == 1">
+                ,review_time = now()
+            </if>
+            <if test = "bookStatus == 3">
+                ,end_time = now()
+            </if>
+            where book_id = #{bookId}
+    </update>
+</mapper>

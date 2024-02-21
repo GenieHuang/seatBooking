@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.seatbooking.springboot.mapper.UserMapper">
+
+    <select id="searchList" resultType="com.seatbooking.springboot.pojo.vo.UserVo">
+        select a.user_id, a.name, a.username, a.role, a.status, a.create_time,c.school, c.type, c.department,IFnull(total, 0) as isBookMeet, IFNull(total2, 0) as isBookSeat, IFNull(total3, 0) as isBookClass
+        from t_user a
+        left join (select user_id, count(*) as total from t_book where book_type = 1 and (book_status = 1 or 6) group by user_id) b on a.user_id = b.user_id
+        left join (select user_id, count(*) as total2 from t_book where book_type = 2 and (book_status = 1  or 6) group by user_id) d on a.user_id = d.user_id
+        left join (select user_id, count(*) as total3 from t_book where book_type = 3 and (book_status = 1 or 6 ) group by user_id) e on a.user_id = e.user_id, t_client c
+        where a.user_id = c.user_id
+        <if test="username != null and username != ''">
+            and a.username like "%"#{username}"%"
+        </if>
+        <if test="name != null and name != ''">
+            and a.name like "%"#{name}"%"
+        </if>
+        <if test ="(status != null and status != '' ) or status == 0">
+            and a.status = #{status}
+        </if>
+        order by a.create_time desc
+        limit #{pageNum},#{pageSize}
+    </select>
+
+
+    <select id="searchTotal" resultType="Integer">
+        select count(*) from t_user
+        <where>
+            <if test="username != null and username != ''">
+                username like "%"#{username}"%"
+            </if>
+            <if test="name != null and name != ''">
+                <if test="username != null and username != ''">
+                    and
+                </if>
+                name like "%"#{name}"%"
+            </if>
+            <if test="(status != null and status != '' ) or status == 0">
+                <if test="(username != null and username != '' ) or (name != null and name != '') ">
+                and
+                </if>
+                status = #{status}
+            </if>
+        </where>
+    </select>
+
+    <update id="updateInfo">
+        update t_user a left join t_client b on a.user_id = b.user_id
+        <set>
+            <if test="name != null and name != ''">
+                a.name = #{name},
+            </if>
+            <if test="username != null and username != ''">
+                a.username = #{username},
+            </if>
+            <if test="school != null and school != ''">
+                b.school = #{school},
+            </if>
+            <if test="type!= null and type != ''">
+                b.type = #{type},
+            </if>
+            <if test="role!= null and role != ''">
+                a.role = #{role},
+            </if>
+            <if test="department!= null and department != ''">
+                b.department = #{department}
+            </if>
+        </set>
+        <where>
+            a.user_id = #{userId}
+        </where>
+    </update>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="userInfo.userId">
+        insert into t_user
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+        user_id,
+        username,
+        name,
+        password,
+        role,
+        status
+        </trim>
+        values
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+        #{userInfo.userId},
+        #{userInfo.username},
+        #{userInfo.name},
+        #{userInfo.password},
+        #{userInfo.role},
+        #{userInfo.status}
+        </trim>
+    </insert>
+
+    <insert id="insertInfo">
+        insert into t_client
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+        user_id,
+        type,
+        <if test="school != null and school != '' ">
+            school,
+        </if>
+        <if test="department != null and department != '' ">
+            department,
+        </if>
+        </trim>
+        values
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+        #{userId},
+        #{type},
+        <if test="school != null and school != '' ">
+            #{school},
+        </if>
+        <if test="department != null and department != '' ">
+            #{department},
+        </if>
+        </trim>
+    </insert>
+
+
+
+</mapper>

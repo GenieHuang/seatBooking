@@ -1,0 +1,38 @@
+// 全局样式
+[v-cloak] {
+	display: none;
+}
+
+// 防止卡片组件作为容器出现滚动条
+.el-card {
+	box-sizing: border-box;
+}
+img {
+	vertical-align: top;
+}
+.default-btn {
+	box-sizing: border-box;
+	height: 36px;
+	padding: 8px 34px;
+}
+.table-box {
+	overflow: auto;
+}
+.avatar-uploader .el-upload {
+	position: relative;
+	overflow: hidden;
+	cursor: pointer;
+	border: 1px dashed var(--el-border-color);
+	border-radius: 6px;
+	transition: var(--el-transition-duration-fast);
+}
+.avatar-uploader .el-upload:hover {
+	border-color: var(--el-color-primary);
+}
+.el-icon.avatar-uploader-icon {
+	width: 100px;
+	height: 100px;
+	font-size: 28px;
+	color: #8c939d;
+	text-align: center;
+}

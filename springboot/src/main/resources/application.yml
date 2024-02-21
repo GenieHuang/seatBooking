@@ -1,0 +1,28 @@
+server:
+  port: 9090
+
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/seat_booking?serverTimezone=GMT%2b8
+    username: root
+    password: root
+  servlet:
+    multipart:
+#      location: /data/upload_tmp
+      max-file-size: 150MB
+      max-request-size: 200MB
+
+mybatis:
+#  configuration:
+#    map-underscore-to-camel-case: true
+#    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  mapper-locations: classpath:mapper/*.xml  #????mybatis?xml??
+
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+logging:
+  level:
+    com.example.mybatis_plus.sys.mapper: debug

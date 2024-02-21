@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.seatbooking.springboot.mapper.BreakMapper">
+
+   <select id="searchList" resultType="com.seatbooking.springboot.pojo.vo.BreakVo">
+       select a.*, b.name, b.username, c.create_book from t_break a
+           left join t_user b on a.user_id = b.user_id
+           left join t_book c on a.book_id = c.book_id
+        <where>
+            <if test="bookId != null and bookId != ''">
+                a.book_id like "%"#{bookId}"%"
+            </if>
+            <if test="username != null and username != ''">
+                <if test = "bookId != null and bookId != ''">
+                    and
+                </if>
+                b.username like "%"#{username}"%"
+            </if>
+            <if test="name != null and name != ''">
+                <if test = "(bookId != null and bookId != '') or (username != null and username != '')">
+                    and
+                </if>
+                b.name like "%"#{name}"%"
+            </if>
+        </where>
+       order by a.break_time desc
+        limit #{pageNum},#{pageSize}
+   </select>
+
+    <select id="searchTotal" resultType="Integer">
+        select count(*) from t_break a
+            left join t_user b on a.user_id = b.user_id
+            left join t_book c on a.book_id = c.book_id
+        <where>
+            <if test="bookId != null and bookId != ''">
+                a.book_id like "%"#{bookId}"%"
+            </if>
+            <if test="username != null and username != ''">
+                <if test = "bookId != null and bookId != ''">
+                    and
+                </if>
+                b.username like "%"#{username}"%"
+            </if>
+            <if test="name != null and name != ''">
+                <if test = "(bookId != null and bookId != '') or (username != null and username != '')">
+                    and
+                </if>
+                b.name like "%"#{name}"%"
+            </if>
+        </where>
+    </select>
+
+
+
+</mapper>
